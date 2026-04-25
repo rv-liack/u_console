@@ -1,0 +1,3 @@
+- Especific writing methods should write their flags if flag writing is enabled.
+
+- Especific writing methods should write their themes if pretty writing is enabled.
