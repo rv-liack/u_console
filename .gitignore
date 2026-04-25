@@ -1,7 +1,21 @@
+# Build artifacts
 build/
-tests/
+bin/
+lib/
 *.o
 *.a
 *.so
+*.dylib
+*.exe
+
+# IDE and tooling
 .cache/
+.vscode/
+.idea/
 compile_commands.json
+*.swp
+*.save
+
+# Operating system
+.DS_Store
+Thumbs.db
