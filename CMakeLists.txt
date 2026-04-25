@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# SFML is now in /usr/local, so find_package will find it automatically
 find_package(SFML 3.1 COMPONENTS Graphics REQUIRED)
 
 # Library: u_console
