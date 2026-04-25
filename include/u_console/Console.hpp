@@ -29,12 +29,11 @@ struct ComposedMessage{
     const char* content = "\n";
     MessageType type = NORMAL;
 
-    sf::Font* font;
-    unsigned int font_size;
-    sf::Text composed_message = sf::Text(*font,content,font_size);
+    sf::Font* font = nullptr;
+    unsigned int font_size = 0;
+    sf::Text composed_message;
 
-    ComposedMessage(const char*,sf::Font&,unsigned int,MessageType);
-    ComposedMessage() = default;
+    ComposedMessage(const char*,sf::Font&,unsigned int,MessageType, bool pw = false, bool fw = false);
 };
 
 namespace u_console {
@@ -85,11 +84,14 @@ public:
     /*
         
     */
-    bool pretty_printing = false;
+
+    bool pretty_writing = false;
+        
     /*
         
     */
-    bool flag_printing = false;
+
+    bool flag_writing = false;
 
     /*
     

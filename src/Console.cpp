@@ -1,5 +1,6 @@
 #include <u_console/Console.hpp>
 #include <iostream>
+#include "string"
 
 namespace u_console {
 Console::Console(unsigned int width, unsigned int height, const std::string& title)
@@ -26,7 +27,7 @@ void Console::run(std::fstream& stream) {
 }
 
 void Console::set_message(const char* message, MessageType type){
-    ComposedMessage* m = new ComposedMessage(message,this->font, this->FONT_SIZE, type);
+    ComposedMessage* m = new ComposedMessage(message,this->font, this->FONT_SIZE, type,pretty_writing,flag_writing);
     this->messages->push_back(m);
 }
 
@@ -92,17 +93,18 @@ void Console::handleWindow(){
         m_window.display();
     }
 
+    for (auto m : *messages) {
+        delete m;
+    }
     delete messages;
 }
 }
 
 
-ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type){
+ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, bool pw, bool fw)
+    : composed_message(font, content, font_size) {
     this->content = content;
     this->type = type;
-    this->composed_message.setString(content);
-    this->composed_message.setCharacterSize(font_size);
-    this->composed_message.setFont(font);
 
     this->font = &font;
     this->font_size = font_size;
@@ -110,12 +112,31 @@ ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned i
     switch (type)
     {
     case ERROR:
-        composed_message.setFillColor(sf::Color::Red);
+        if(pw){
+            composed_message.setFillColor(sf::Color::Red);
+        }
+        if(fw){
+            composed_message.setString(std::string("[ERROR]: ").append(content));
+        }
         break;
+        
     case WARN:
-        composed_message.setFillColor(sf::Color::Yellow);
+        if(pw){
+            composed_message.setFillColor(sf::Color::Yellow);
+        }
+        if(fw){
+            composed_message.setString(std::string("[WARN]: ").append(content));
+        }
+        break;
+
     case INFO:
-        composed_message.setFillColor(sf::Color::Blue);
+        if(pw){
+            composed_message.setFillColor(sf::Color::Blue);
+        }
+        if(fw){
+            composed_message.setString(std::string("[INFO]: ").append(content));
+        }
+        break;
     default:
         break;
     }
