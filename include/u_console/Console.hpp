@@ -129,15 +129,12 @@ public:
      */
     bool flag_writing = false;
 
-    const unsigned int FONT_SIZE = 14;
-    sf::Font font;
-
 private:
     std::vector<ComposedMessage*>* messages = new std::vector<ComposedMessage*>();
     sf::RenderWindow m_window;
 
-    unsigned int vertical_top_offset = 0;
-    unsigned int vertical_bottom_offset = 0;
+    float vertical_top_offset = 0;
+    float vertical_bottom_offset = 0;
 
     void handleWindow();
     void set_message(const char*, MessageType);
@@ -163,5 +160,12 @@ private:
     std::string m_fontPath;
     std::iostream* m_externalStream = nullptr;
     std::streamoff m_lastReadPos = 0;
+
+    const float LEFT_MARGIN = 20.0f;
+    const float VERTICAL_GAP = 10.0f;
+
+    const unsigned int FONT_SIZE = 14;
+    sf::Font font;
+
 };
 }

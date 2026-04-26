@@ -222,15 +222,15 @@ void Console::handleWindow(){
             }
         }
 
-        m_window.clear();
+        m_window.clear(sf::Color(41, 45, 51));
         
         int index = 0;
         for(auto m : *messages){
             auto& cpm = m->composed_message;
-            cpm.setPosition({0, static_cast<float>(index * FONT_SIZE)});
+            cpm.setPosition({LEFT_MARGIN, static_cast<float>(index * FONT_SIZE) + (index + 1) * VERTICAL_GAP});
 
             if(cpm.getPosition().y >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
-                m->composed_message.setPosition({0.0f, static_cast<float>(cpm.getPosition().y - vertical_top_offset)});
+                cpm.setPosition({LEFT_MARGIN, cpm.getPosition().y - vertical_top_offset});
                 m_window.draw(cpm);
             }
             index++;
@@ -255,17 +255,17 @@ ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned i
     switch (type)
     {
     case ERROR:
-        if(pw) composed_message.setFillColor(sf::Color::Red);
+        if(pw) composed_message.setFillColor(sf::Color(166, 36, 36));
         if(fw) composed_message.setString(std::string("[ERROR]: ").append(content));
         break;
         
     case WARN:
-        if(pw) composed_message.setFillColor(sf::Color::Yellow);
+        if(pw) composed_message.setFillColor(sf::Color(10, 53, 110));
         if(fw) composed_message.setString(std::string("[WARN]: ").append(content));
         break;
 
     case INFO:
-        if(pw) composed_message.setFillColor(sf::Color::Blue);
+        if(pw) composed_message.setFillColor(sf::Color(196, 201, 42));
         if(fw) composed_message.setString(std::string("[INFO]: ").append(content));
         break;
     default:

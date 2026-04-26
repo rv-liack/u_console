@@ -19,5 +19,5 @@ target_include_directories(u_console PUBLIC
 target_link_libraries(u_console PUBLIC SFML::Graphics)
 
 # Tests: u_console_tests
-add_executable(u_console_tests tests/main.cpp)
-target_link_libraries(u_console_tests PRIVATE u_console)
+add_executable(u_test tests/main.cpp)
+target_link_libraries(u_test PRIVATE u_console)
