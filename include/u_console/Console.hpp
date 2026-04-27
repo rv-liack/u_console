@@ -21,7 +21,8 @@ enum MessageType {
     NORMAL, ///< Standard white text
     INFO,   ///< Informational message (typically Blue)
     WARN,   ///< Warning message (typically Yellow)
-    ERROR   ///< Error message (typically Red)
+    ERROR,  ///< Error message (typically Red)
+    SUCCESS ///< Success/Intro message (typically Green)
 };
 
 /**
@@ -39,12 +40,13 @@ enum OutWay {
  * Handles the raw content and its graphical representation using SFML.
  */
 struct ComposedMessage {
-    std::string content = "\n";
-    MessageType type = NORMAL;
+    std::string content = "\n"; ///< Raw text of the message.
+    MessageType type = NORMAL;  ///< Type of message for styling.
+    unsigned int lines = 1;     ///< Number of lines in the message.
 
-    sf::Font* font = nullptr;
-    unsigned int font_size = 0;
-    sf::Text composed_message;
+    sf::Font* font = nullptr;           ///< Font used for rendering.
+    unsigned int font_size = 0;         ///< Size of the font.
+    sf::Text composed_message;          ///< SFML representation of the message.
 
     /**
      * @brief Construct a new Composed Message object.
@@ -53,10 +55,11 @@ struct ComposedMessage {
      * @param font Reference to the font to be used.
      * @param font_size Character size for the text.
      * @param type The type of message (influences color and prefix).
+     * @param prompt The vendor prompt string.
      * @param pw Whether to enable pretty printing (colors).
      * @param fw Whether to enable flag writing (prefixes).
      */
-    ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, bool pw = false, bool fw = false);
+    ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, std::string prompt, bool pw = false, bool fw = false);
 };
 
 namespace u_console {
@@ -120,6 +123,12 @@ public:
     void set_font(const std::string& path);
 
     /**
+     * @brief Sets the vendor name to be shown in the prompt.
+     * @param vendor The name of the vendor (e.g., "Rafael").
+     */
+    void set_vendor(const std::string& vendor);
+
+    /**
      * @brief If true, messages will be color-coded based on their type.
      */
     bool pretty_writing = false;
@@ -130,14 +139,23 @@ public:
     bool flag_writing = false;
 
 private:
-    std::vector<ComposedMessage*>* messages = new std::vector<ComposedMessage*>();
-    sf::RenderWindow m_window;
+    std::vector<ComposedMessage*>* messages = new std::vector<ComposedMessage*>(); ///< Internal list of all messages.
+    sf::RenderWindow m_window; ///< Main SFML window.
 
-    float vertical_top_offset = 0;
-    float vertical_bottom_offset = 0;
+    float vertical_top_offset = 0;    ///< Scrolling top offset.
+    float vertical_bottom_offset = 0; ///< Scrolling bottom offset (window height).
 
+    /**
+     * @brief Main window event and rendering loop.
+     */
     void handleWindow();
-    void set_message(const char*, MessageType);
+
+    /**
+     * @brief Creates and appends a ComposedMessage to the messages list.
+     * @param message Raw text content.
+     * @param type The type of message.
+     */
+    void set_message(const char* message, MessageType type);
 
     /**
      * @brief Attempts to load the font from m_fontPath or common system fallbacks.
@@ -161,11 +179,14 @@ private:
     std::iostream* m_externalStream = nullptr;
     std::streamoff m_lastReadPos = 0;
 
+    std::string current_vendor = "";
+
+    const std::string DEFAULT_VENDOR = "console";
+    const std::string VENDOR_PROMPT = "--> ";
+
     const float LEFT_MARGIN = 20.0f;
     const float VERTICAL_GAP = 10.0f;
-
-    const unsigned int FONT_SIZE = 14;
+    const unsigned int FONT_SIZE = 16;
     sf::Font font;
-
 };
 }

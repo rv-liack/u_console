@@ -12,6 +12,11 @@ Console::Console(unsigned int width, unsigned int height, const std::string& tit
     m_fontPath = "/usr/share/fonts/aajohan-comfortaa-fonts/Comfortaa-Regular.otf";
     
     this->vertical_bottom_offset = height;
+
+    load_font();
+    
+    // Intro message
+    set_message("u_console by Rafaelito Vicioso Fleurimond (liack)\nAdvanced Engineering Delegation™", SUCCESS);
 }
 
 bool Console::load_font() {
@@ -82,7 +87,16 @@ void Console::run(std::iostream& stream) {
 }
 
 void Console::set_message(const char* message, MessageType type){
-    ComposedMessage* m = new ComposedMessage(message, this->font, this->FONT_SIZE, type, pretty_writing, flag_writing);
+
+    std::string def_vendor = DEFAULT_VENDOR;
+
+    if(!current_vendor.empty()){
+        def_vendor = current_vendor;
+    }
+
+    def_vendor.append(VENDOR_PROMPT);
+
+    ComposedMessage* m = new ComposedMessage(message, this->font, this->FONT_SIZE, type,def_vendor, pretty_writing, flag_writing);
     this->messages->push_back(m);
 }
 
@@ -112,6 +126,7 @@ void Console::write_to_outway(const char* message, MessageType type) {
                 case INFO:  *os << "[INFO]: ";  break;
                 case WARN:  *os << "[WARN]: ";  break;
                 case ERROR: *os << "[ERROR]: "; break;
+                case SUCCESS: *os << "[SUCCESS]: "; break;
                 default: break;
             }
         }
@@ -178,6 +193,9 @@ void Console::check_outway_state() {
             } else if (line.compare(0, 9, "[ERROR]: ") == 0) {
                 type = ERROR;
                 content = line.substr(9);
+            } else if (line.compare(0, 11, "[SUCCESS]: ") == 0) {
+                type = SUCCESS;
+                content = line.substr(11);
             }
 
             set_message(content.c_str(), type);
@@ -224,16 +242,16 @@ void Console::handleWindow(){
 
         m_window.clear(sf::Color(41, 45, 51));
         
-        int index = 0;
+        float current_y = VERTICAL_GAP;
         for(auto m : *messages){
             auto& cpm = m->composed_message;
-            cpm.setPosition({LEFT_MARGIN, static_cast<float>(index * FONT_SIZE) + (index + 1) * VERTICAL_GAP});
+            cpm.setPosition({LEFT_MARGIN, current_y});
 
-            if(cpm.getPosition().y >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
+            if(cpm.getPosition().y + (m->lines * FONT_SIZE) >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
                 cpm.setPosition({LEFT_MARGIN, cpm.getPosition().y - vertical_top_offset});
                 m_window.draw(cpm);
             }
-            index++;
+            current_y += (m->lines * FONT_SIZE) + VERTICAL_GAP;
         }
         m_window.display();
     }
@@ -244,31 +262,46 @@ void Console::handleWindow(){
     delete messages;
 }
 
+void Console::set_vendor(const std::string& vendor){
+    this->current_vendor = vendor;
+}
+
 } // namespace u_console
 
-ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, bool pw, bool fw)
-    : content(content), composed_message(font, content, font_size) {
-    this->type = type;
-    this->font = &font;
-    this->font_size = font_size;
+ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, std::string prompt, bool pw, bool fw)
+    : content(content), type(type), font(&font), font_size(font_size), composed_message(font) {
+    
+    // Count lines
+    this->lines = 1;
+    std::string content_str(content);
+    for (char c : content_str) {
+        if (c == '\n') this->lines++;
+    }
 
-    switch (type)
-    {
-    case ERROR:
-        if(pw) composed_message.setFillColor(sf::Color(166, 36, 36));
-        if(fw) composed_message.setString(std::string("[ERROR]: ").append(content));
-        break;
-        
-    case WARN:
-        if(pw) composed_message.setFillColor(sf::Color(10, 53, 110));
-        if(fw) composed_message.setString(std::string("[WARN]: ").append(content));
-        break;
+    std::string full_text;
+    if (fw) {
+        full_text += prompt;
+        switch (type) {
+            case INFO:  full_text += "[INFO]: ";  break;
+            case WARN:  full_text += "[WARN]: ";  break;
+            case ERROR: full_text += "[ERROR]: "; break;
+            case SUCCESS: full_text += "[SUCCESS]: "; break;
+            default: break;
+        }
+    }
+    full_text += content;
 
-    case INFO:
-        if(pw) composed_message.setFillColor(sf::Color(196, 201, 42));
-        if(fw) composed_message.setString(std::string("[INFO]: ").append(content));
-        break;
-    default:
-        break;
+    composed_message.setFont(font);
+    composed_message.setCharacterSize(font_size);
+    composed_message.setString(sf::String::fromUtf8(full_text.begin(), full_text.end()));
+
+    if (pw || type == SUCCESS) {
+        switch (type) {
+            case INFO:  composed_message.setFillColor(sf::Color(32, 83, 250));  break;
+            case WARN:  composed_message.setFillColor(sf::Color(250, 203, 32)); break;
+            case ERROR: composed_message.setFillColor(sf::Color(250, 32, 32));  break;
+            case SUCCESS: composed_message.setFillColor(sf::Color(34, 177, 76)); break;
+            default: break;
+        }
     }
 }

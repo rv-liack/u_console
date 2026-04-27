@@ -55,8 +55,12 @@ int main() {
     // Enable features
     console.pretty_writing = true;
     console.flag_writing = true;
+
+    console.set_vendor("Rafael");
+
+    console.write_warning("Rápido");
     
-    console.set_font("/usr/share/fonts/rit-rachana-fonts/RIT-Rachana-Bold.otf");
+    console.set_font("/home/liack/Descargas/Amaranth,Roboto_Mono,Roboto_Slab/Amaranth/Amaranth-Bold.ttf");
     // Start producer thread
     std::thread t(producer, std::ref(console));
     
