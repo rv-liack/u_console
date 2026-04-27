@@ -56,9 +56,7 @@ int main() {
     console.pretty_writing = true;
     console.flag_writing = true;
 
-    console.set_vendor("Rafael");
-
-    console.write_warning("Rápido");
+    console.set_vendor("API_consumer");
     
     console.set_font("/home/liack/Descargas/Amaranth,Roboto_Mono,Roboto_Slab/Amaranth/Amaranth-Bold.ttf");
     // Start producer thread
