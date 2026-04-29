@@ -77,7 +77,7 @@ public:
      * @param height Window height in pixels.
      * @param title Window title bar text.
      */
-    Console(unsigned int width, unsigned int height, const std::string& title);
+    Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font);
     
     /**
      * @brief Starts the console in DEFAULT mode (internal stack).
@@ -172,8 +172,9 @@ private:
      * @brief Unified writing method that redirects to the appropriate outway.
      */
     void write_to_outway(const char* message, MessageType type);
-
+    
     OutWay out_way = DEFAULT;
+
     std::string m_filePath;
     std::string m_fontPath;
     std::iostream* m_externalStream = nullptr;

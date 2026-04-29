@@ -50,7 +50,7 @@ void producer(u_console::Console& console) {
 }
 
 int main() {
-    u_console::Console console(800, 600, "u_console Test Application");
+    u_console::Console console(800, 600, "u_console Test Application", "/usr/share/fonts/liberation-mono-fonts/LiberationMono-Bold.ttf");
     
     // Enable features
     console.pretty_writing = true;
@@ -58,7 +58,6 @@ int main() {
 
     console.set_vendor("API_consumer");
     
-    console.set_font("/home/liack/Descargas/Amaranth,Roboto_Mono,Roboto_Slab/Amaranth/Amaranth-Bold.ttf");
     // Start producer thread
     std::thread t(producer, std::ref(console));
     

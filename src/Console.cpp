@@ -4,41 +4,23 @@
 
 namespace u_console {
 
-Console::Console(unsigned int width, unsigned int height, const std::string& title)
+Console::Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font)
     : m_window(sf::VideoMode({width, height}), title) {
     std::cout << "u_console initialized." << std::endl;
-
-    // Default font path (common on many Linux distros)
-    m_fontPath = "/usr/share/fonts/aajohan-comfortaa-fonts/Comfortaa-Regular.otf";
     
     this->vertical_bottom_offset = height;
+    m_fontPath = font;
 
     load_font();
     
     // Intro message
-    set_message("u_console by Rafaelito Vicioso Fleurimond (liack)\nAdvanced Engineering Delegation™", SUCCESS);
+    set_message("Uconsole by Rafaelito Vicioso Fleurimond (liack)", SUCCESS);
 }
 
 bool Console::load_font() {
     // Try primary font path
     if (this->font.openFromFile(m_fontPath)) {
         return true;
-    }
-
-    // Fallback list of common system fonts
-    std::vector<std::string> fallbacks = {
-        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf",
-        "/usr/share/fonts/liberation-sans/LiberationSans-Regular.ttf",
-        "/usr/share/fonts/gnu-free/FreeSans.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
-    };
-
-    for (const auto& path : fallbacks) {
-        if (this->font.openFromFile(path)) {
-            std::cout << "u_console: Loaded fallback font from " << path << std::endl;
-            return true;
-        }
     }
 
     std::cerr << "u_console Error: Could not load any usable font." << std::endl;
