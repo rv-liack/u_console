@@ -50,13 +50,17 @@ void Console::set_font(const std::string& path) {
 }
 
 void Console::run() {
-    load_font();
+    if(!load_font()){
+        return;
+    }
     out_way = DEFAULT;
     handleWindow();
 }
 
 void Console::run(const char* filePath) {
-    load_font();
+    if(!load_font()){
+        return;
+    }
     out_way = FSTREAM;
     m_filePath = filePath;
     
@@ -74,7 +78,9 @@ void Console::run(const char* filePath) {
 }
 
 void Console::run(std::iostream& stream) {
-    load_font();
+    if(!load_font()){
+        return;
+    }
     out_way = MEMSTREAM;
     m_externalStream = &stream;
     
