@@ -34,6 +34,7 @@ void producer(u_console::Console& console) {
     std::uniform_int_distribution<> msg_dist(0, messages.size() - 1);
     std::uniform_int_distribution<> type_dist(0, 2);
 
+    console.set_font("sdf");
     while (running) {
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
         if (!running) break;

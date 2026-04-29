@@ -18,7 +18,12 @@ Console::Console(unsigned int width, unsigned int height, const std::string& tit
 }
 
 bool Console::load_font() {
-    // Try primary font path
+
+    if(!validate_file(m_fontPath.c_str())){
+        std::cerr << "u_console Error: Not valid file path provided." << std::endl;
+        return false;
+    }
+
     if (this->font.openFromFile(m_fontPath)) {
         return true;
     }
@@ -29,6 +34,7 @@ bool Console::load_font() {
 
 void Console::set_font(const std::string& path) {
     m_fontPath = path;
+    load_font();
 }
 
 void Console::run() {
@@ -252,6 +258,10 @@ void Console::handleWindow(){
 
 void Console::set_vendor(const std::string& vendor){
     this->current_vendor = vendor;
+}
+
+bool Console::validate_file(const char* path){
+    return std::filesystem::exists(path) && std::filesystem::is_regular_file(path);
 }
 
 } // namespace u_console

@@ -173,6 +173,12 @@ private:
      */
     void write_to_outway(const char* message, MessageType type);
     
+    /**
+     * @brief Method to check if a file exists and is a file.
+     * @return true if @param path is exists and is a file. 
+     */
+    bool validate_file(const char* path);
+
     OutWay out_way = DEFAULT;
 
     std::string m_filePath;
