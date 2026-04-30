@@ -1,6 +1,7 @@
 #include <u_console/Console.hpp>
 #include <iostream>
 #include <string>
+#include <stdio.h>
 
 namespace u_console {
 
@@ -14,13 +15,13 @@ Console::Console(unsigned int width, unsigned int height, const std::string& tit
     load_font();
     
     // Intro message
-    set_message("Uconsole by Rafaelito Vicioso Fleurimond (liack)", SUCCESS);
+    set_message(std::string("Uconsole. Version: ").append(STR(VERSION)).c_str(), SUCCESS);
 }
 
 bool Console::load_font() {
 
     if(!validate_file(m_fontPath.c_str())){
-        std::cerr << "u_console Error: Not valid file path provided." << std::endl;
+        std::cerr << "u_console Error: Not valid file path provided." << m_fontPath << std::endl;
         return false;
     }
 
@@ -38,17 +39,11 @@ void Console::set_font(const std::string& path) {
 }
 
 void Console::run() {
-    if(!load_font()){
-        return;
-    }
     out_way = DEFAULT;
-    handleWindow();
+    handle_window();
 }
 
 void Console::run(const char* filePath) {
-    if(!load_font()){
-        return;
-    }
     out_way = FSTREAM;
     m_filePath = filePath;
     
@@ -62,13 +57,10 @@ void Console::run(const char* filePath) {
         m_lastReadPos = 0;
     }
 
-    handleWindow();
+    handle_window();
 }
 
 void Console::run(std::iostream& stream) {
-    if(!load_font()){
-        return;
-    }
     out_way = MEMSTREAM;
     m_externalStream = &stream;
     
@@ -77,7 +69,7 @@ void Console::run(std::iostream& stream) {
     m_externalStream->seekp(0, std::ios::end);
     m_lastReadPos = m_externalStream->tellg();
 
-    handleWindow();
+    handle_window();
 }
 
 void Console::set_message(const char* message, MessageType type){
@@ -93,6 +85,7 @@ void Console::set_message(const char* message, MessageType type){
     ComposedMessage* m = new ComposedMessage(message, this->font, this->FONT_SIZE, type,def_vendor, pretty_writing, flag_writing);
     this->messages->push_back(m);
 }
+
 
 void Console::write_to_outway(const char* message, MessageType type) {
     if (out_way == DEFAULT) {
@@ -204,7 +197,13 @@ void Console::check_outway_state() {
     }
 }
 
-void Console::handleWindow(){
+void Console::handle_window(){
+    if(m_window.setActive(true)){
+        printf("Contexto activado en el nuevo hilo\n");
+    }else{
+        printf("El proceso de contextualizado ha fallado\n");
+    }
+
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
 

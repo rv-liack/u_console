@@ -6,6 +6,11 @@
  * from various sources, including internal memory, files, and streams.
  */
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+#define VERSION 1.0.0
+
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -13,6 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 /**
  * @brief Categories for console messages, determining their visual style and flags.
@@ -76,6 +82,7 @@ public:
      * @param width Window width in pixels.
      * @param height Window height in pixels.
      * @param title Window title bar text.
+     * @param font Font file path.
      */
     Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font);
     
@@ -131,6 +138,7 @@ public:
     /**
      * @brief If true, messages will be color-coded based on their type.
      */
+  
     bool pretty_writing = false;
         
     /**
@@ -148,7 +156,7 @@ private:
     /**
      * @brief Main window event and rendering loop.
      */
-    void handleWindow();
+    void handle_window();
 
     /**
      * @brief Creates and appends a ComposedMessage to the messages list.
@@ -158,7 +166,7 @@ private:
     void set_message(const char* message, MessageType type);
 
     /**
-     * @brief Attempts to load the font from m_fontPath or common system fallbacks.
+     * @brief Attempts to load the font from m_fontPath..
      * @return true if a font was successfully loaded.
      */
     bool load_font();
@@ -185,7 +193,6 @@ private:
     std::string m_fontPath;
     std::iostream* m_externalStream = nullptr;
     std::streamoff m_lastReadPos = 0;
-
     std::string current_vendor = "";
 
     const std::string DEFAULT_VENDOR = "console";
