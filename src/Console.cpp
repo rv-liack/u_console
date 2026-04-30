@@ -274,10 +274,6 @@ void Console::handle_window(){
         }
         m_window.display();
     }
-    
-    if (m_window.isOpen()) {
-        m_window.close();
-    }
     m_running = false;
 }
 
