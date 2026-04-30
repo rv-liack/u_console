@@ -143,6 +143,11 @@ public:
     void write_warning(const char*);
 
     /**
+     * @brief Writes a SUCCESS message to the active outway.
+     */
+    void write_success(const char*);
+
+    /**
      * @brief Sets the path for the console font.
      * @param path Absolute or relative path to a .ttf or .otf file.
      */

@@ -165,6 +165,10 @@ void Console::write_error(const char* message){
     write_to_outway(message, ERROR);
 }
 
+void Console::write_success(const char* message){
+    write_to_outway(message, SUCCESS);
+}
+
 void Console::check_outway_state() {
     if (out_way == DEFAULT) return;
 
