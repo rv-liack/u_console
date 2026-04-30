@@ -10,6 +10,7 @@ A lightweight, multi-source console implementation using SFML. `u_console` allow
 - **Pretty Printing**: Optional color-coded output for different message severities.
 - **Flag Writing**: Toggleable prefixes (e.g., `[INFO]:`) for explicit message categorization.
 - **Interactive UI**: Supports scrolling and handles window focus efficiently.
+- **Asynchronous Execution**: The console window runs in its own thread, allowing you to continue writing messages from your main loop without blocking.
 
 ## Directory Structure
 
@@ -47,24 +48,26 @@ make
 
 ```cpp
 #include <u_console/Console.hpp>
+#include <thread>
+#include <chrono>
 
 int main() {
-    u_console::Console console(800, 600, "My Console");
+    u_console::Console console(800, 600, "My Console", "path/to/font.ttf");
     
     // Enable features
     console.pretty_writing = true;
     console.flag_writing = true;
 
-    // Option 1: Internal console (default)
-    console.write_info("System started.");
+    // Start the console (Non-blocking)
     console.run();
 
-    // Option 2: Track a file
-    // console.run("app.log");
-
-    // Option 3: Track a memory stream
-    // std::stringstream ss;
-    // console.run(ss);
+    // Write messages from the main thread
+    console.write_info("System started.");
+    
+    // Keep the main thread alive if necessary
+    while (console.is_running()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
     return 0;
 }
@@ -72,8 +75,8 @@ int main() {
 
 ## How it Works
 
-The console uses an internal monitoring system (`check_outway_state`) that periodically polls the active "outway" (file or stream). It maintains a read position to ensure only new content is processed, and it can parse prefixes to reconstruct the original `MessageType` for appropriate styling.
+The console uses an internal monitoring system (`check_outway_state`) that periodically polls the active "outway" (file or stream). It maintains a read position to ensure only new content is processed, and it can parse prefixes to reconstruct the original `MessageType` for appropriate styling. The window loop runs in a separate thread, protected by a mutex to ensure thread-safe writing operations.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details (or add your own).
+This project is licensed under the MIT License.

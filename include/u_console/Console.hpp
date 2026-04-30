@@ -19,6 +19,9 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <mutex>
+#include <atomic>
+#include <memory>
 
 /**
  * @brief Categories for console messages, determining their visual style and flags.
@@ -87,6 +90,11 @@ public:
     Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font);
     
     /**
+     * @brief Destructor for the Console. Ensures resources are cleaned up and thread is joined.
+     */
+    ~Console();
+
+    /**
      * @brief Starts the console in DEFAULT mode (internal stack).
      */
     void run();
@@ -102,6 +110,17 @@ public:
      * @param stream Reference to a std::iostream (e.g., std::stringstream).
      */
     void run(std::iostream& stream);
+
+    /**
+     * @brief Stops the console, closes the window, and joins the worker thread.
+     */
+    void close();
+
+    /**
+     * @brief Checks if the console is currently running.
+     * @return true if the window loop is active.
+     */
+    bool is_running() const;
 
     /**
      * @brief Writes a normal message to the active outway.
@@ -147,11 +166,18 @@ public:
     bool flag_writing = false;
 
 private:
-    std::vector<ComposedMessage*>* messages = new std::vector<ComposedMessage*>(); ///< Internal list of all messages.
+    std::vector<std::unique_ptr<ComposedMessage>> messages; ///< Internal list of all messages.
     sf::RenderWindow m_window; ///< Main SFML window.
 
     float vertical_top_offset = 0;    ///< Scrolling top offset.
     float vertical_bottom_offset = 0; ///< Scrolling bottom offset (window height).
+
+    std::thread m_windowThread;       ///< Thread for the window loop.
+    std::atomic<bool> m_running{false}; ///< Flag indicating if the console is running.
+    std::mutex m_mutex;               ///< Mutex for thread-safe access to messages.
+
+    unsigned int m_width, m_height;   ///< Stored window dimensions.
+    std::string m_title;              ///< Stored window title.
 
     /**
      * @brief Main window event and rendering loop.

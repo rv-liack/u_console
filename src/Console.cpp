@@ -6,7 +6,7 @@
 namespace u_console {
 
 Console::Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font)
-    : m_window(sf::VideoMode({width, height}), title) {
+    : m_width(width), m_height(height), m_title(title) {
     std::cout << "u_console initialized." << std::endl;
     
     this->vertical_bottom_offset = height;
@@ -16,6 +16,26 @@ Console::Console(unsigned int width, unsigned int height, const std::string& tit
     
     // Intro message
     set_message(std::string("Uconsole. Version: ").append(STR(VERSION)).c_str(), SUCCESS);
+}
+
+Console::~Console() {
+    close();
+}
+
+void Console::close() {
+    if (m_running) {
+        m_running = false;
+        if (m_window.isOpen()) {
+            m_window.close();
+        }
+        if (m_windowThread.joinable()) {
+            m_windowThread.join();
+        }
+    }
+}
+
+bool Console::is_running() const {
+    return m_running;
 }
 
 bool Console::load_font() {
@@ -39,11 +59,14 @@ void Console::set_font(const std::string& path) {
 }
 
 void Console::run() {
+    if (m_running) return;
     out_way = DEFAULT;
-    handle_window();
+    m_running = true;
+    m_windowThread = std::thread(&Console::handle_window, this);
 }
 
 void Console::run(const char* filePath) {
+    if (m_running) return;
     out_way = FSTREAM;
     m_filePath = filePath;
     
@@ -57,10 +80,12 @@ void Console::run(const char* filePath) {
         m_lastReadPos = 0;
     }
 
-    handle_window();
+    m_running = true;
+    m_windowThread = std::thread(&Console::handle_window, this);
 }
 
 void Console::run(std::iostream& stream) {
+    if (m_running) return;
     out_way = MEMSTREAM;
     m_externalStream = &stream;
     
@@ -69,7 +94,8 @@ void Console::run(std::iostream& stream) {
     m_externalStream->seekp(0, std::ios::end);
     m_lastReadPos = m_externalStream->tellg();
 
-    handle_window();
+    m_running = true;
+    m_windowThread = std::thread(&Console::handle_window, this);
 }
 
 void Console::set_message(const char* message, MessageType type){
@@ -82,8 +108,8 @@ void Console::set_message(const char* message, MessageType type){
 
     def_vendor.append(VENDOR_PROMPT);
 
-    ComposedMessage* m = new ComposedMessage(message, this->font, this->FONT_SIZE, type,def_vendor, pretty_writing, flag_writing);
-    this->messages->push_back(m);
+    std::lock_guard<std::mutex> lock(m_mutex);
+    messages.push_back(std::make_unique<ComposedMessage>(message, this->font, this->FONT_SIZE, type, def_vendor, pretty_writing, flag_writing));
 }
 
 
@@ -198,23 +224,13 @@ void Console::check_outway_state() {
 }
 
 void Console::handle_window(){
-    if(m_window.setActive(true)){
-        printf("Contexto activado en el nuevo hilo\n");
-    }else{
-        printf("El proceso de contextualizado ha fallado\n");
-    }
-
+    m_window.create(sf::VideoMode({m_width, m_height}), m_title);
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
 
-    while (m_window.isOpen()) {
+    while (m_window.isOpen() && m_running) {
         
         check_outway_state();
-
-        if(!m_window.hasFocus()){
-            m_window.display();
-            continue;
-        }
 
         while (const std::optional event = m_window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
@@ -233,26 +249,30 @@ void Console::handle_window(){
             }
         }
 
+        if(!m_window.hasFocus()){
+            m_window.display();
+            continue;
+        }
+
         m_window.clear(sf::Color(41, 45, 51));
         
         float current_y = VERTICAL_GAP;
-        for(auto m : *messages){
-            auto& cpm = m->composed_message;
-            cpm.setPosition({LEFT_MARGIN, current_y});
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            for(const auto& m : messages){
+                auto& cpm = m->composed_message;
+                cpm.setPosition({LEFT_MARGIN, current_y});
 
-            if(cpm.getPosition().y + (m->lines * FONT_SIZE) >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
-                cpm.setPosition({LEFT_MARGIN, cpm.getPosition().y - vertical_top_offset});
-                m_window.draw(cpm);
+                if(cpm.getPosition().y + (m->lines * FONT_SIZE) >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
+                    cpm.setPosition({LEFT_MARGIN, cpm.getPosition().y - vertical_top_offset});
+                    m_window.draw(cpm);
+                }
+                current_y += (m->lines * FONT_SIZE) + VERTICAL_GAP;
             }
-            current_y += (m->lines * FONT_SIZE) + VERTICAL_GAP;
         }
         m_window.display();
     }
-
-    for (auto m : *messages) {
-        delete m;
-    }
-    delete messages;
+    m_running = false;
 }
 
 void Console::set_vendor(const std::string& vendor){

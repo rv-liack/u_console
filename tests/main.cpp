@@ -68,6 +68,11 @@ int main() {
 
     console.run();
 
+    // Wait while console is running
+    while (console.is_running()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
     // Stop producer thread
     running = false;
     if (t.joinable()) {
