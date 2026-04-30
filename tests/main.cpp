@@ -62,9 +62,8 @@ int main() {
     // Start producer thread
     std::thread t(producer, std::ref(console));
     
-    // Run console with memory stream
-    // Note: In a real scenario, run() blocks, so the producer 
-    // would be writing to the 'ss' through the 'console' object.
+    // Note: console.run() is now non-blocking. It starts the window 
+    // in its own thread.
 
     console.run();
 

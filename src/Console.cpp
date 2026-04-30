@@ -23,14 +23,9 @@ Console::~Console() {
 }
 
 void Console::close() {
-    if (m_running) {
-        m_running = false;
-        if (m_window.isOpen()) {
-            m_window.close();
-        }
-        if (m_windowThread.joinable()) {
-            m_windowThread.join();
-        }
+    m_running = false;
+    if (m_windowThread.joinable()) {
+        m_windowThread.join();
     }
 }
 
@@ -60,6 +55,7 @@ void Console::set_font(const std::string& path) {
 
 void Console::run() {
     if (m_running) return;
+    if (m_windowThread.joinable()) m_windowThread.join();
     out_way = DEFAULT;
     m_running = true;
     m_windowThread = std::thread(&Console::handle_window, this);
@@ -67,6 +63,7 @@ void Console::run() {
 
 void Console::run(const char* filePath) {
     if (m_running) return;
+    if (m_windowThread.joinable()) m_windowThread.join();
     out_way = FSTREAM;
     m_filePath = filePath;
     
@@ -86,6 +83,7 @@ void Console::run(const char* filePath) {
 
 void Console::run(std::iostream& stream) {
     if (m_running) return;
+    if (m_windowThread.joinable()) m_windowThread.join();
     out_way = MEMSTREAM;
     m_externalStream = &stream;
     
