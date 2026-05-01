@@ -1,7 +1,7 @@
 /**
  * @file Console.hpp
  * @brief Main header for the u_console library.
- * 
+ *
  * u_console provides a graphical console window that can display messages
  * from various sources, including internal memory, files, and streams.
  */
@@ -45,7 +45,7 @@ enum OutWay {
 
 /**
  * @brief Internal representation of a single console message.
- * 
+ *
  * Handles the raw content and its graphical representation using SFML.
  */
 struct ComposedMessage {
@@ -59,7 +59,7 @@ struct ComposedMessage {
 
     /**
      * @brief Construct a new Composed Message object.
-     * 
+     *
      * @param content Raw text of the message.
      * @param font Reference to the font to be used.
      * @param font_size Character size for the text.
@@ -81,14 +81,14 @@ class Console {
 public:
     /**
      * @brief Initialize a new Console window.
-     * 
+     *
      * @param width Window width in pixels.
      * @param height Window height in pixels.
      * @param title Window title bar text.
      * @param font Font file path.
      */
     Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font);
-    
+
     /**
      * @brief Destructor for the Console. Ensures resources are cleaned up and thread is joined.
      */
@@ -126,17 +126,17 @@ public:
      * @brief Writes a normal message to the active outway.
      */
     void write(const char*);
-    
+
     /**
      * @brief Writes an INFO message to the active outway.
      */
     void write_info(const char*);
-    
+
     /**
      * @brief Writes an ERROR message to the active outway.
      */
     void write_error(const char*);
-    
+
     /**
      * @brief Writes a WARN message to the active outway.
      */
@@ -162,9 +162,9 @@ public:
     /**
      * @brief If true, messages will be color-coded based on their type.
      */
-  
+
     bool pretty_writing = false;
-        
+
     /**
      * @brief If true, messages will include a prefix (e.g., "[INFO]: ").
      */
@@ -211,10 +211,10 @@ private:
      * @brief Unified writing method that redirects to the appropriate outway.
      */
     void write_to_outway(const char* message, MessageType type);
-    
+
     /**
      * @brief Method to check if a file exists and is a file.
-     * @return true if @param path is exists and is a file. 
+     * @return true if @param path is exists and is a file.
      */
     bool validate_file(const char* path);
 
