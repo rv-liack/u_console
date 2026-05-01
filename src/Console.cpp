@@ -246,6 +246,12 @@ void Console::handle_window(){
                     continue;
                 }
 
+                float acumulated = messages.size() * FONT_SIZE + messages.size() * VERTICAL_GAP - FONT_SIZE;
+
+                if(vertical_top_offset >= acumulated && e->delta > 0){
+                    continue;
+                }
+                
                 vertical_top_offset += e->delta * FONT_SIZE;
                 vertical_bottom_offset += e->delta * FONT_SIZE;
             }
