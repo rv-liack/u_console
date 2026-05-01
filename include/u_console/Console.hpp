@@ -169,6 +169,9 @@ public:
      */
     bool flag_writing = false;
 
+
+    float scroll_speed = 1.0f;
+
 private:
     std::vector<std::unique_ptr<ComposedMessage>> messages; ///< Internal list of all messages.
     sf::RenderWindow m_window; ///< Main SFML window.

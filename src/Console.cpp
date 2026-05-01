@@ -8,12 +8,12 @@ namespace u_console {
 Console::Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font)
     : m_width(width), m_height(height), m_title(title) {
     std::cout << "u_console initialized." << std::endl;
-    
+
     this->vertical_bottom_offset = height;
     m_fontPath = font;
 
     load_font();
-    
+
     // Intro message
     set_message(std::string("Uconsole. Version: ").append(STR(VERSION)).c_str(), SUCCESS);
 }
@@ -66,7 +66,7 @@ void Console::run(const char* filePath) {
     if (m_windowThread.joinable()) m_windowThread.join();
     out_way = FSTREAM;
     m_filePath = filePath;
-    
+
     std::ifstream file(m_filePath, std::ios::ate | std::ios::binary);
     if (file.is_open()) {
         m_lastReadPos = file.tellg();
@@ -86,7 +86,7 @@ void Console::run(std::iostream& stream) {
     if (m_windowThread.joinable()) m_windowThread.join();
     out_way = MEMSTREAM;
     m_externalStream = &stream;
-    
+
     m_externalStream->clear();
     m_externalStream->seekg(0, std::ios::end);
     m_externalStream->seekp(0, std::ios::end);
@@ -195,7 +195,7 @@ void Console::check_outway_state() {
         std::string line;
         while (std::getline(*is, line)) {
             std::streamoff nextPos = is->tellg();
-            
+
             MessageType type = NORMAL;
             std::string content = line;
 
@@ -214,7 +214,7 @@ void Console::check_outway_state() {
             }
 
             set_message(content.c_str(), type);
-            
+
             if (nextPos != -1) {
                 m_lastReadPos = nextPos;
             } else {
@@ -231,7 +231,7 @@ void Console::handle_window(){
     m_window.setVerticalSyncEnabled(true);
 
     while (m_window.isOpen() && m_running) {
-        
+
         check_outway_state();
 
         while (const std::optional event = m_window.pollEvent()){
@@ -241,7 +241,7 @@ void Console::handle_window(){
 
             if(event->is<sf::Event::MouseWheelScrolled>()){
                 auto e = event->getIf<sf::Event::MouseWheelScrolled>();
-                
+
                 if( e->delta < 0 && vertical_top_offset <= 0){
                     continue;
                 }
@@ -251,9 +251,9 @@ void Console::handle_window(){
                 if(vertical_top_offset >= acumulated && e->delta > 0){
                     continue;
                 }
-                
-                vertical_top_offset += e->delta * FONT_SIZE;
-                vertical_bottom_offset += e->delta * FONT_SIZE;
+
+                vertical_top_offset += e->delta * FONT_SIZE * scroll_speed;
+                vertical_bottom_offset += e->delta * FONT_SIZE * scroll_speed;
             }
         }
 
@@ -263,7 +263,7 @@ void Console::handle_window(){
         }
 
         m_window.clear(sf::Color(41, 45, 51));
-        
+
         float current_y = VERTICAL_GAP;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
@@ -295,7 +295,7 @@ bool Console::validate_file(const char* path){
 
 ComposedMessage::ComposedMessage(const char* content, sf::Font& font, unsigned int font_size, MessageType type, std::string prompt, bool pw, bool fw)
     : content(content), type(type), font(&font), font_size(font_size), composed_message(font) {
-    
+
     // Count lines
     this->lines = 1;
     std::string content_str(content);
