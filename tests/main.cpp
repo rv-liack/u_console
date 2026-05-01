@@ -51,18 +51,18 @@ void producer(u_console::Console& console) {
 }
 
 int main() {
-    u_console::Console console(800, 600, "u_console Test Application", "/usr/share/fonts/liberation-mono-fonts/LiberationMono-Bold.ttf");
-    
+    u_console::Console console(800, 600, "u_console Test Application", "../fonts/BigBlueTerminal/BigBlueTerm437NerdFont-Regular.ttf");
+
     // Enable features
     console.pretty_writing = true;
     console.flag_writing = true;
 
     console.set_vendor("API_consumer");
-    
+
     // Start producer thread
     std::thread t(producer, std::ref(console));
-    
-    // Note: console.run() is now non-blocking. It starts the window 
+
+    // Note: console.run() is now non-blocking. It starts the window
     // in its own thread.
 
     console.run();
@@ -77,6 +77,6 @@ int main() {
     if (t.joinable()) {
         t.join();
     }
-    
+
     return 0;
 }
