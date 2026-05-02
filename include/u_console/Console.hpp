@@ -169,8 +169,9 @@ public:
      */
     bool flag_writing = false;
 
-
     float scroll_speed = 1.0f;
+
+    unsigned int font_size = 16;
 
 private:
     std::vector<std::unique_ptr<ComposedMessage>> messages; ///< Internal list of all messages.
@@ -233,7 +234,6 @@ private:
 
     const float LEFT_MARGIN = 20.0f;
     const float VERTICAL_GAP = 10.0f;
-    const unsigned int FONT_SIZE = 16;
     sf::Font font;
 };
 }

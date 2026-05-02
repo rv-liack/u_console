@@ -107,7 +107,7 @@ void Console::set_message(const char* message, MessageType type){
     def_vendor.append(VENDOR_PROMPT);
 
     std::lock_guard<std::mutex> lock(m_mutex);
-    messages.push_back(std::make_unique<ComposedMessage>(message, this->font, this->FONT_SIZE, type, def_vendor, pretty_writing, flag_writing));
+    messages.push_back(std::make_unique<ComposedMessage>(message, this->font, this->font_size, type, def_vendor, pretty_writing, flag_writing));
 }
 
 
@@ -246,14 +246,14 @@ void Console::handle_window(){
                     continue;
                 }
 
-                float acumulated = messages.size() * FONT_SIZE + messages.size() * VERTICAL_GAP - FONT_SIZE;
+                float acumulated = messages.size() * font_size + messages.size() * VERTICAL_GAP - font_size;
 
                 if(vertical_top_offset >= acumulated && e->delta > 0){
                     continue;
                 }
 
-                vertical_top_offset += e->delta * FONT_SIZE * scroll_speed;
-                vertical_bottom_offset += e->delta * FONT_SIZE * scroll_speed;
+                vertical_top_offset += e->delta * font_size * scroll_speed;
+                vertical_bottom_offset += e->delta * font_size * scroll_speed;
             }
         }
 
@@ -271,11 +271,11 @@ void Console::handle_window(){
                 auto& cpm = m->composed_message;
                 cpm.setPosition({LEFT_MARGIN, current_y});
 
-                if(cpm.getPosition().y + (m->lines * FONT_SIZE) >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
+                if(cpm.getPosition().y + (m->lines * font_size) >= vertical_top_offset && cpm.getPosition().y <= vertical_bottom_offset){
                     cpm.setPosition({LEFT_MARGIN, cpm.getPosition().y - vertical_top_offset});
                     m_window.draw(cpm);
                 }
-                current_y += (m->lines * FONT_SIZE) + VERTICAL_GAP;
+                current_y += (m->lines * font_size) + VERTICAL_GAP;
             }
         }
         m_window.display();
