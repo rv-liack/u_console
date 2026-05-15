@@ -13,13 +13,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install SFML and dependencies
+    - name: Install Dependencies
       run: |
-          sudo apt-get update
-          sudo apt-get install -y libsfml-dev
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ libx11-dev libxcursor-dev libxrandr-dev libudev-dev libfreetype6-dev libvorbis-dev libflac-dev libogg-dev libopenal-dev
 
-    - name: Configure CMake
-      run: cmake -S . -B build
+    - name: Download and Build SFML 3
+      run: |
+        git clone https://github.com/SFML/SFML.git
+        cd SFML
+        # Opcional: git checkout 3.0.0 (si quieres una versión exacta)
+        cmake -S . -B build -DBUILD_SHARED_LIBS=ON
+        sudo cmake --build build --target install
 
-    - name: Build
-      run: cmake --build build
+    - name: Configure Your Project
+      run: cmake -S . -B build_project
+
+    - name: Build Your Project
+      run: cmake --build build_project
