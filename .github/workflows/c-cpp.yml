@@ -16,7 +16,22 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ libx11-dev libxcursor-dev libxrandr-dev libudev-dev libfreetype6-dev libvorbis-dev libflac-dev libogg-dev libopenal-dev
+        sudo apt-get install -y \
+          cmake \
+          g++ \
+          libx11-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libudev-dev \
+          libfreetype6-dev \
+          libvorbis-dev \
+          libflac-dev \
+          libogg-dev \
+          libopenal-dev \
+          libgl1-mesa-dev \
+          libegl1-mesa-dev \
+          libxinerama-dev \
+          libxi-dev
 
     - name: Download and Build SFML 3
       run: |
