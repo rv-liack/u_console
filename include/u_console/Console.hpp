@@ -154,7 +154,7 @@ public:
 
     /**
      * @brief Sets the vendor name to be shown in the prompt.
-     * @param vendor The name of the vendor (e.g., "Rafael").
+     * @param vendor The name of the vendor (e.g., "program_name").
      */
     void set_vendor(const std::string& vendor);
 
