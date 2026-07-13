@@ -1,13 +1,11 @@
 #include <u_console/Console.hpp>
 #include <iostream>
 #include <string>
-#include <stdio.h>
 
 namespace u_console {
 
 Console::Console(unsigned int width, unsigned int height, const std::string& title, const std::string& font)
     : m_width(width), m_height(height), m_title(title) {
-    std::cout << "u_console initialized." << std::endl;
 
     this->vertical_bottom_offset = height;
     m_fontPath = font;

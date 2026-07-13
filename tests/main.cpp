@@ -51,7 +51,7 @@ void producer(u_console::Console& console) {
 }
 
 int main() {
-    u_console::Console console(800, 600, "u_console Test Application", "../fonts/BigBlueTerminal/BigBlueTerm437NerdFont-Regular.ttf");
+    u_console::Console console(800, 600, "u_console Test Application", "../fonts/Roboto_Slab/RobotoSlab-Black.ttf");
 
     // Enable features
     console.pretty_writing = true;
